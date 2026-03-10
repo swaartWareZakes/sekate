@@ -12,16 +12,17 @@ function ResponsiveCamera() {
   useEffect(() => {
     const isMobile = size.width < 768;
     
-    if (isMobile) {
-      // Pull camera back further on mobile and increase FOV to fit the wide block
-      camera.position.set(20, 18, 20); 
-      camera.fov = 45;
-    } else {
-      // Desktop default
-      camera.position.set(15, 12, 15);
-      camera.fov = 28;
+    // TYPE GUARD: Only apply FOV if it's a Perspective Camera
+    if (camera instanceof THREE.PerspectiveCamera) {
+      if (isMobile) {
+        camera.position.set(20, 18, 20); 
+        camera.fov = 45;
+      } else {
+        camera.position.set(15, 12, 15);
+        camera.fov = 28;
+      }
+      camera.updateProjectionMatrix();
     }
-    camera.updateProjectionMatrix();
   }, [size.width, camera]);
 
   return null;
@@ -32,8 +33,7 @@ function LevelWrapper({ children }: { children: React.ReactNode }) {
   const { size } = useThree();
   const isMobile = size.width < 768;
   
-  // On mobile, we push the model "up" in the 3D space so it sits above 
-  // the bottom interface sheet we built.
+  // Lift models up on mobile to avoid the bottom UI sheet
   const yOffset = isMobile ? 1.5 : 0;
 
   return (
@@ -59,12 +59,12 @@ function AerialLevel() {
 
 // --- LEVEL 2: LAND SURVEY ---
 function SurveyLevel() {
-  const { scene: camera } = useGLTF("/models/camera.glb");
+  const { scene: cameraModel } = useGLTF("/models/camera.glb");
   const { scene: block } = useGLTF("/models/block.glb");
   return (
     <group>
       <primitive object={block} position={[0, -0.6, 0]} scale={[8, 0.4, 8]} />
-      <primitive object={camera} position={[-2.5, 0.4, 2.5]} scale={1.5} />
+      <primitive object={cameraModel} position={[-2.5, 0.4, 2.5]} scale={1.5} />
     </group>
   );
 }
