@@ -1,9 +1,47 @@
 "use client";
 
-import { useRef, Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { useRef, Suspense, useEffect } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
 import { Environment, useGLTF, PresentationControls, Html, Float, MeshDistortMaterial, ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
+
+// --- RESPONSIVE CAMERA CONTROLLER ---
+function ResponsiveCamera() {
+  const { camera, size } = useThree();
+  
+  useEffect(() => {
+    const isMobile = size.width < 768;
+    
+    if (isMobile) {
+      // Pull camera back further on mobile and increase FOV to fit the wide block
+      camera.position.set(20, 18, 20); 
+      camera.fov = 45;
+    } else {
+      // Desktop default
+      camera.position.set(15, 12, 15);
+      camera.fov = 28;
+    }
+    camera.updateProjectionMatrix();
+  }, [size.width, camera]);
+
+  return null;
+}
+
+// --- LEVEL WRAPPER (Handles Mobile Y-Offset) ---
+function LevelWrapper({ children }: { children: React.ReactNode }) {
+  const { size } = useThree();
+  const isMobile = size.width < 768;
+  
+  // On mobile, we push the model "up" in the 3D space so it sits above 
+  // the bottom interface sheet we built.
+  const yOffset = isMobile ? 1.5 : 0;
+
+  return (
+    <group position={[0, yOffset, 0]}>
+      {children}
+    </group>
+  );
+}
 
 // --- LEVEL 1: AERIAL ---
 function AerialLevel() {
@@ -11,7 +49,6 @@ function AerialLevel() {
   return (
     <Float speed={3} rotationIntensity={1} floatIntensity={2}>
       <primitive object={scene} scale={1.8} />
-      {/* Abstract Scanning Plane */}
       <mesh position={[0, -2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[10, 10]} />
         <MeshDistortMaterial color="#FF4D00" opacity={0.1} transparent speed={2} factor={0.4} wireframe />
@@ -26,9 +63,7 @@ function SurveyLevel() {
   const { scene: block } = useGLTF("/models/block.glb");
   return (
     <group>
-      {/* Foundation shifted deeper down */}
       <primitive object={block} position={[0, -0.6, 0]} scale={[8, 0.4, 8]} />
-      {/* Camera lifted significantly to Y=0.4 to ensure full visibility */}
       <primitive object={camera} position={[-2.5, 0.4, 2.5]} scale={1.5} />
     </group>
   );
@@ -41,7 +76,6 @@ function CivilLevel() {
   return (
     <group>
       <primitive object={block} position={[0, -0.6, 0]} scale={[8, 0.4, 8]} />
-      {/* Pipes elevated to sit clear of the slab */}
       <primitive object={pipes} position={[0, 0.6, 0]} scale={3} />
     </group>
   );
@@ -66,7 +100,6 @@ function PlanningLevel() {
   return (
     <group>
       <primitive object={block} position={[0, -0.6, 0]} scale={[8, 0.4, 8]} />
-      {/* City lifted to ensure the base doesn't clip the texture */}
       <primitive object={city} position={[0, 0.8, 0]} scale={3.5} />
     </group>
   );
@@ -77,6 +110,7 @@ export default function SandboxScene({ phase }: { phase: number }) {
     <Canvas 
       camera={{ position: [15, 12, 15], fov: 28 }} 
       dpr={[1, 2]}
+      className="touch-none"
     >
       <color attach="background" args={["#050505"]} />
       
@@ -90,6 +124,7 @@ export default function SandboxScene({ phase }: { phase: number }) {
           </div>
         </Html>
       }>
+        <ResponsiveCamera />
         <Environment preset="city" />
         <ambientLight intensity={0.9} />
         <spotLight position={[20, 30, 20]} angle={0.2} penumbra={1} intensity={3.5} castShadow />
@@ -102,25 +137,24 @@ export default function SandboxScene({ phase }: { phase: number }) {
           polar={[-0.1, 0.3]} 
           azimuth={[-0.6, 0.6]}
         >
-          <group>
-            {phase === 1 && <AerialLevel />}
-            {phase === 2 && <SurveyLevel />}
-            {phase === 3 && <CivilLevel />}
-            {phase === 4 && <EnvLevel />}
-            {phase === 5 && <PlanningLevel />}
-            
-            {phase === 0 && (
-              <mesh>
-                <boxGeometry args={[2, 2, 2]} />
-                <meshStandardMaterial color="#FF4D00" wireframe />
-              </mesh>
-            )}
-          </group>
+          <LevelWrapper>
+            <group>
+              {phase === 1 && <AerialLevel />}
+              {phase === 2 && <SurveyLevel />}
+              {phase === 3 && <CivilLevel />}
+              {phase === 4 && <EnvLevel />}
+              {phase === 5 && <PlanningLevel />}
+              
+              {phase === 0 && (
+                <mesh>
+                  <boxGeometry args={[2, 2, 2]} />
+                  <meshStandardMaterial color="#FF4D00" wireframe />
+                </mesh>
+              )}
+            </group>
+          </LevelWrapper>
         </PresentationControls>
 
-        {/* Removed Grid component for a clean, minimal look */}
-
-        {/* ContactShadows grounds the model in the void */}
         <ContactShadows position={[0, -0.61, 0]} opacity={0.6} scale={25} blur={3} far={10} />
       </Suspense>
     </Canvas>
