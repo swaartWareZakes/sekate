@@ -38,3 +38,13 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
 }
+
+/* Custom fluid typography utility */
+@layer utilities {
+  .hero-text {
+    @apply text-5xl sm:text-7xl md:text-8xl lg:text-[10rem] font-black uppercase tracking-tighter leading-[0.85];
+  }
+  .section-title {
+    @apply text-4xl sm:text-5xl md:text-7xl font-black uppercase tracking-tighter leading-[0.95];
+  }
+}

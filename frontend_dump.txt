@@ -1,8 +1,450 @@
-\n--- ./app/layout.tsx ---\n
+\n--- ./app/experience/page.tsx ---\n
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, Map, Pipette, TreePine, Building2, Radio } from "lucide-react";
+import dynamic from "next/dynamic";
+
+const SandboxScene = dynamic(() => import("@/components/canvas/SandboxScene"), { ssr: false });
+
+export default function ExperiencePage() {
+  const [phase, setPhase] = useState(0);
+
+  return (
+    <main className="fixed inset-0 bg-[#050505] text-white flex flex-col md:flex-row overflow-hidden">
+      
+      {/* LEFT: Engineering Interface */}
+      <aside className="w-full md:w-[450px] h-full bg-[#0a0a0a] border-r border-white/5 flex flex-col z-20 shadow-2xl">
+        
+        {/* Terminal Header */}
+        <div className="p-8 bg-black/20 flex items-center justify-between">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Radio size={14} className="text-[var(--accent)] animate-pulse" />
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">System Active</span>
+            </div>
+            <h1 className="text-2xl font-black uppercase tracking-tighter leading-none">SEKATE.OS v2.0</h1>
+          </div>
+          <Link href="/" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[var(--accent)] hover:text-black transition-all">
+            <ArrowLeft size={16} />
+          </Link>
+        </div>
+
+        {/* Gamified Stepper - Locked (No Scroll) */}
+        <div className="flex-1 p-8 flex flex-col justify-center gap-4">
+          {[
+            { id: 1, t: "Aerial Scanning", d: "Deploy UAV Drone for initial site mapping." },
+            { id: 2, t: "Land Survey", d: "Geodetic verification & tripod setup." },
+            { id: 3, t: "Civil Works", d: "Installation of structural foundations & drainage." },
+            { id: 4, t: "Environment", d: "Eco-compliance & green-zone establishment." },
+            { id: 5, t: "Town Planning", d: "Superstructure assembly & grid connection." }
+          ].map((item) => (
+            <button 
+              key={item.id}
+              onClick={() => setPhase(item.id)}
+              className={`group text-left p-5 border-l-2 transition-all duration-500 ${
+                phase === item.id 
+                  ? 'bg-[var(--accent)]/10 border-[var(--accent)]' 
+                  : 'bg-white/5 border-white/10 hover:bg-white/10'
+              }`}
+            >
+              <div className="flex items-center justify-between mb-1">
+                <span className={`text-[10px] font-black uppercase tracking-widest ${phase === item.id ? 'text-[var(--accent)]' : 'text-slate-500'}`}>
+                  Phase 0{item.id}
+                </span>
+                {phase >= item.id && <div className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_10px_#FF4D00]" />}
+              </div>
+              <h3 className="text-lg font-black uppercase tracking-tighter mb-1">{item.t}</h3>
+              <p className={`text-xs leading-relaxed ${phase === item.id ? 'text-slate-300' : 'text-slate-500'}`}>
+                {item.d}
+              </p>
+            </button>
+          ))}
+
+          <button 
+            onClick={() => setPhase(0)}
+            className="mt-4 text-[10px] font-black uppercase tracking-[0.4em] text-center text-slate-700 hover:text-[var(--accent)] transition-colors"
+          >
+            // Terminate Simulation
+          </button>
+        </div>
+
+        {/* Footer Stats */}
+        <div className="p-8 border-t border-white/5 text-[10px] font-mono text-slate-600 flex justify-between uppercase">
+          <span>LAT: -26.2041</span>
+          <span>LNG: 28.0473</span>
+          <span>ALT: 1753M</span>
+        </div>
+      </aside>
+
+      {/* RIGHT: High-Fidelity Render Viewport */}
+      <section className="flex-1 relative">
+        <SandboxScene phase={phase} />
+        
+        {/* Viewport UI Decor */}
+        <div className="absolute top-8 right-8 text-right pointer-events-none">
+          <div className="text-[var(--accent)] font-black text-4xl leading-none">0{phase}</div>
+          <div className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-500">Active Module</div>
+        </div>
+
+        <div className="absolute bottom-8 right-8 pointer-events-none border-l border-[var(--accent)] pl-4 py-2">
+          <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white">Visual Inspection Mode</p>
+          <p className="text-[9px] text-slate-500 uppercase mt-1">L-Click + Drag to Rotate Camera</p>
+        </div>
+      </section>
+
+    </main>
+  );
+}\n--- ./app/contact/page.tsx ---\n
+"use client";
+
+import { motion } from "framer-motion";
+import Navbar from "@/components/ui/Navbar";
+import Footer from "@/components/sections/Footer";
+
+export default function ContactPage() {
+  return (
+    <main className="relative w-full min-h-screen bg-[#050505] text-white">
+      <Navbar />
+
+      <section className="w-full min-h-screen pt-24 md:pt-32 flex flex-col lg:flex-row">
+        
+        {/* Left Side: Dark Map / Image Overlay */}
+        <div className="w-full lg:w-1/2 relative min-h-[50vh] lg:min-h-screen flex flex-col justify-end p-8 md:p-16 overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            {/* Using your awesome highway aerial as the dark background */}
+            <img 
+              src="/images/planning.jpg" 
+              alt="Aerial Highway" 
+              className="w-full h-full object-cover grayscale-[0.8] opacity-30" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
+          </div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.8 }} // Delayed to wait for preloader
+            className="relative z-10"
+          >
+            <h1 className="text-6xl md:text-[8rem] font-black uppercase tracking-tighter leading-[0.85] mb-8">
+              Let's <br/> <span className="text-[var(--accent)]">Talk.</span>
+            </h1>
+            
+            <div className="flex flex-col gap-8">
+              <div>
+                <p className="text-[var(--accent)] text-xs font-bold uppercase tracking-widest mb-2">Our Offices</p>
+                <p className="text-xl font-medium text-slate-300">22 Minnaar Street, Newtown<br/>Johannesburg, 2001, SA</p>
+              </div>
+              <div>
+                <p className="text-[var(--accent)] text-xs font-bold uppercase tracking-widest mb-2">Direct Line</p>
+                <p className="text-xl font-medium text-slate-300">+27 11 123 4567</p>
+              </div>
+              <div>
+                <p className="text-[var(--accent)] text-xs font-bold uppercase tracking-widest mb-2">Email</p>
+                <a href="mailto:info@sekateconsulting.co.za" className="text-xl font-medium text-white hover:text-[var(--accent)] transition-colors border-b border-white/20 pb-1">
+                  info@sekateconsulting.co.za
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Right Side: Minimalist Form */}
+        <div className="w-full lg:w-1/2 bg-[#0a0a0a] flex items-center justify-center p-8 md:p-16 lg:p-24 border-l border-white/5">
+          <motion.form 
+            initial={{ opacity: 0, x: 40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 1 }}
+            className="w-full max-w-xl flex flex-col gap-10"
+            onSubmit={(e) => e.preventDefault()}
+          >
+            <h2 className="text-3xl font-black uppercase tracking-tight text-white mb-4">
+              Send a Message
+            </h2>
+
+            <div className="flex flex-col gap-2 group">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 group-focus-within:text-[var(--accent)] transition-colors">Your Name</label>
+              <input type="text" className="w-full bg-transparent border-b border-white/20 pb-4 text-xl text-white focus:outline-none focus:border-[var(--accent)] transition-colors" />
+            </div>
+
+            <div className="flex flex-col gap-2 group">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 group-focus-within:text-[var(--accent)] transition-colors">Email Address</label>
+              <input type="email" className="w-full bg-transparent border-b border-white/20 pb-4 text-xl text-white focus:outline-none focus:border-[var(--accent)] transition-colors" />
+            </div>
+
+            <div className="flex flex-col gap-2 group">
+              <label className="text-xs font-bold uppercase tracking-widest text-slate-500 group-focus-within:text-[var(--accent)] transition-colors">Project Details</label>
+              <textarea rows={4} className="w-full bg-transparent border-b border-white/20 pb-4 text-xl text-white focus:outline-none focus:border-[var(--accent)] transition-colors resize-none"></textarea>
+            </div>
+
+            <button type="submit" className="self-start mt-4 bg-[var(--accent)] text-black px-10 py-5 text-sm font-black uppercase tracking-[0.2em] hover:bg-white transition-all duration-300">
+              Submit Inquiry
+            </button>
+          </motion.form>
+        </div>
+
+      </section>
+
+      <Footer />
+    </main>
+  );
+}\n--- ./app/projects/[id]/page.tsx ---\n
+import { notFound } from "next/navigation";
+import { projectsData } from "@/lib/data";
+import Navbar from "@/components/ui/Navbar";
+import Footer from "@/components/sections/Footer";
+
+export default async function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const project = projectsData.find((p) => p.id.toString() === resolvedParams.id);
+
+  if (!project) notFound();
+
+  return (
+    <main className="relative w-full min-h-screen bg-[#050505] text-white">
+      <Navbar />
+
+      {/* Cinematic Project Hero */}
+      <section className="relative w-full h-[90vh] overflow-hidden flex items-end">
+        <div className="absolute inset-0">
+          <img src={project.img} alt={project.title} className="w-full h-full object-cover opacity-60" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
+        </div>
+        
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-12 pb-24">
+          <div className="inline-block border border-[var(--accent)] text-[var(--accent)] font-bold uppercase tracking-widest text-xs px-6 py-3 mb-8">
+            {project.category}
+          </div>
+          <h1 className="text-5xl md:text-[8rem] font-black uppercase tracking-tighter leading-[0.85] text-white drop-shadow-2xl">
+            {project.title}
+          </h1>
+        </div>
+      </section>
+
+      {/* Project Specs Data Bar */}
+      <section className="w-full border-y border-white/10 bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-white/10">
+          <div className="flex-1 p-8 md:p-12">
+            <p className="text-[var(--accent)] text-xs font-bold uppercase tracking-widest mb-3">Client</p>
+            <p className="text-white font-medium text-lg">Confidential Partner</p>
+          </div>
+          <div className="flex-1 p-8 md:p-12">
+            <p className="text-[var(--accent)] text-xs font-bold uppercase tracking-widest mb-3">Timeline</p>
+            <p className="text-white font-medium text-lg">2024 - 2026</p>
+          </div>
+          <div className="flex-1 p-8 md:p-12">
+            <p className="text-[var(--accent)] text-xs font-bold uppercase tracking-widest mb-3">Location</p>
+            <p className="text-white font-medium text-lg">Gauteng, SA</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Editorial Overview & Gallery */}
+      <section className="w-full py-24 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto">
+          
+          <div className="max-w-4xl mb-24">
+            <h3 className="text-4xl font-medium mb-10 text-white">Project Overview</h3>
+            <p className="text-slate-400 leading-relaxed text-xl mb-6 font-light">
+              This landmark project required extensive planning, rigorous environmental compliance, and state-of-the-art engineering execution. Working closely with municipal stakeholders and leading contractors, Sekate Consulting delivered end-to-end oversight to ensure all infrastructure met the highest SANS and SANRAL specifications.
+            </p>
+          </div>
+
+          {/* Full Width Gallery */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12">
+            {project.gallery?.map((img, idx) => (
+              <div key={idx} className={`w-full overflow-hidden ${idx === 0 ? 'md:col-span-2 h-[50vh] md:h-[80vh]' : 'h-[400px]'}`}>
+                <img 
+                  src={img} 
+                  alt={`${project.title} Gallery Image`} 
+                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000 ease-out" 
+                />
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
+}\n--- ./app/projects/page.tsx ---\n
+"use client";
+import Navbar from "@/components/ui/Navbar";
+import Projects from "@/components/sections/Projects";
+import Footer from "@/components/sections/Footer";
+
+export default function ProjectsPage() {
+  return (
+    <main className="bg-[#050505] min-h-screen pt-20">
+      <Navbar  />
+      <Projects />
+      <Footer />
+    </main>
+  );
+}\n--- ./app/about/page.tsx ---\n
+"use client";
+
+import { motion } from "framer-motion";
+import Navbar from "@/components/ui/Navbar";
+import Footer from "@/components/sections/Footer";
+
+export default function AboutPage() {
+  return (
+    <main className="relative w-full min-h-screen bg-[#050505] text-white overflow-hidden">
+      <Navbar />
+
+      {/* Cinematic Hero Section */}
+      <section className="relative w-full h-screen flex items-end px-6 md:px-12 pb-24">
+        <div className="absolute inset-0 z-0">
+          {/* Using the second video for variety */}
+          <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-50" src="/video/civil-bridge.mp4" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
+        </div>
+        
+        <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col md:flex-row justify-between items-end gap-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <p className="text-[var(--accent)] font-bold uppercase tracking-[0.3em] text-sm mb-4">
+              Our Story
+            </p>
+            <h1 className="text-5xl md:text-[8rem] font-black uppercase tracking-tighter leading-[0.85] drop-shadow-2xl">
+              Building<br/>The Future.
+            </h1>
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="max-w-xs pb-4"
+          >
+            <p className="text-slate-300 font-medium leading-relaxed">
+              For over a decade, we have engineered infrastructure that connects communities, protects the environment, and stands the test of time.
+            </p>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* The Manifesto / Split Layout */}
+      <section className="w-full py-24 md:py-40 px-6 md:px-12 border-t border-white/5">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 items-center">
+          
+          {/* Left: Text Content */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+          >
+            <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-8 leading-tight">
+              We create spaces <br/> that <span className="text-outline-accent">endure.</span>
+            </h2>
+            <div className="flex flex-col gap-6 text-slate-400 text-lg leading-relaxed font-light">
+              <p>
+                Founded on the principles of precision and integrity, Sekate Consulting began as a dedicated structural engineering firm. Over the past 10 years, we have evolved into a multidisciplinary powerhouse, integrating civil engineering, town planning, and environmental stewardship.
+              </p>
+              <p>
+                Our approach is hands-on. We don't just design; we supervise, we audit, and we ensure that every square meter of infrastructure meets stringent SANRAL, COLTO, and NEMA standards.
+              </p>
+            </div>
+            
+            <div className="mt-12 flex gap-12">
+              <div>
+                <h4 className="text-5xl font-black text-[var(--accent)] mb-2">350+</h4>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Projects Delivered</p>
+              </div>
+              <div>
+                <h4 className="text-5xl font-black text-[var(--accent)] mb-2">10</h4>
+                <p className="text-xs font-bold uppercase tracking-widest text-slate-500">Years Active</p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right: Blueprint/Drawing Image */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="relative h-[600px] w-full"
+          >
+            <div className="absolute inset-0 bg-[var(--accent)] translate-x-4 translate-y-4 md:translate-x-8 md:translate-y-8" />
+            <img 
+              src="/images/drawing.jpg" 
+              alt="Engineering Blueprint" 
+              className="relative z-10 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
+            />
+          </motion.div>
+
+        </div>
+      </section>
+
+      {/* Media Mosaic / "How We Work" */}
+      <section className="w-full py-24 md:py-32 px-6 md:px-12 bg-[#0a0a0a]">
+        <div className="max-w-7xl mx-auto">
+          
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-16 md:mb-24 text-center max-w-3xl mx-auto"
+          >
+            <h3 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-6">
+              A Multidisciplinary Approach
+            </h3>
+            <p className="text-slate-400 text-lg">
+              From the first topographic drone survey to the final environmental compliance audit, our teams work in perfect synchronization.
+            </p>
+          </motion.div>
+
+          {/* Staggered Masonry Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="md:col-span-2 md:row-span-2 relative overflow-hidden group"
+            >
+              <img src="/images/bridge.jpg" className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" alt="Civil Construction" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+              <h4 className="absolute bottom-8 left-8 text-3xl font-black uppercase text-white tracking-tighter">Civil Execution</h4>
+            </motion.div>
+            
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }}
+              className="md:col-span-1 md:row-span-1 relative overflow-hidden group"
+            >
+              <img src="/images/surverying2.jpg" className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" alt="Surveying" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+              <h4 className="absolute bottom-6 left-6 text-xl font-black uppercase text-white tracking-tighter">Precision Surveying</h4>
+            </motion.div>
+
+            <motion.div 
+              initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }}
+              className="md:col-span-1 md:row-span-1 relative overflow-hidden group"
+            >
+              <img src="/images/water2.jpg" className="w-full h-full object-cover grayscale-[0.5] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" alt="Environmental" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
+              <h4 className="absolute bottom-6 left-6 text-xl font-black uppercase text-white tracking-tighter">Environmental Integrity</h4>
+            </motion.div>
+          </div>
+
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
+}\n--- ./app/layout.tsx ---\n
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/ui/SmoothScroll";
+import Preloader from "@/components/ui/Preloader"; // <-- Import added
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
@@ -15,7 +457,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-[#D4FF00] selection:text-black`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased selection:bg-[#FF4D00] selection:text-black`}>
+        {/* The Loader triggers first */}
+        <Preloader />
+        
         <SmoothScroll>
           {children}
         </SmoothScroll>
@@ -23,12 +468,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     </html>
   );
 }\n--- ./app/page.tsx ---\n
-"use client"; // We need this because we are using React state (useState)
+"use client";
 
-import { useState } from "react";
 import Navbar from "@/components/ui/Navbar";
 import HeroSlider from "@/components/sections/HeroSlider";
-import BookModal from "@/components/ui/BookModal";
 import AboutStats from "@/components/sections/AboutStats";
 import ServicesGrid from "@/components/sections/ServicesGrid";
 import Projects from "@/components/sections/Projects";
@@ -36,27 +479,13 @@ import Clients from "@/components/sections/Clients";
 import Footer from "@/components/sections/Footer";
 
 export default function Home() {
-  // State to control the booking modal
-  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
-
   return (
     <main className="relative w-full min-h-screen bg-[#050505]">
-      {/* Pass the state-changing function to the Navbar */}
-      <Navbar onBookClick={() => setIsBookModalOpen(true)} />
-      
-      {/* The Modal itself */}
-      <BookModal isOpen={isBookModalOpen} onClose={() => setIsBookModalOpen(false)} />
-      
-      {/* The Hero */}
+      <Navbar /> {/* SO CLEAN! */}
       <HeroSlider />
-      
-      {/* The newly added section! */}
       <AboutStats />
-
       <ServicesGrid />
-
       <Projects />
-
       <Clients />
       <Footer />
     </main>
@@ -101,6 +530,104 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
+}\n--- ./app/services/[id]/page.tsx ---\n
+import { notFound } from "next/navigation";
+import { servicesData } from "@/lib/data";
+import Navbar from "@/components/ui/Navbar";
+import Footer from "@/components/sections/Footer";
+
+export default async function ServiceDetail({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const service = servicesData.find((s) => s.id === resolvedParams.id);
+
+  if (!service) notFound();
+
+  return (
+    <main className="relative w-full min-h-screen bg-[#050505] text-white">
+      <Navbar />
+
+      {/* Hero Image Section */}
+      <section className="relative w-full h-[70vh] overflow-hidden">
+        <div className="absolute inset-0">
+          <img src={service.media} alt={service.title} className="w-full h-full object-cover opacity-50" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent" />
+        </div>
+        
+        <div className="relative z-10 w-full h-full flex flex-col justify-end px-6 md:px-12 pb-24 max-w-7xl mx-auto">
+          <p className="text-[var(--accent)] font-bold uppercase tracking-[0.3em] text-sm mb-6 flex items-center gap-4">
+            <span className="w-12 h-[2px] bg-[var(--accent)]"></span>
+            Service 0{service.num}
+          </p>
+          <h1 className="text-5xl md:text-[7rem] font-black uppercase tracking-tighter leading-[0.9]">
+            {service.title}
+          </h1>
+        </div>
+      </section>
+
+      {/* Editorial Content & Gallery */}
+      <section className="w-full py-24 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 md:gap-24 items-start">
+          
+          {/* Left: Text Content */}
+          <div className="sticky top-32">
+            <h3 className="text-3xl md:text-5xl font-medium mb-10 text-white leading-tight">
+              {service.short}
+            </h3>
+            <p className="text-slate-400 leading-relaxed text-lg mb-12">
+              {service.description}
+            </p>
+            
+            <div className="bg-[#111] p-10 border-l-4 border-[var(--accent)]">
+              <h4 className="text-lg font-black uppercase tracking-widest text-white mb-6">
+                Core Capabilities
+              </h4>
+              <ul className="flex flex-col gap-4">
+                {service.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-start gap-4 text-slate-300 text-sm md:text-base">
+                    <span className="text-[var(--accent)] font-bold">///</span>
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Right: Staggered Image Gallery */}
+          <div className="flex flex-col gap-8 md:gap-16 pt-10">
+            {service.gallery?.map((img, idx) => (
+              <div 
+                key={idx} 
+                className={`w-full h-[400px] md:h-[600px] overflow-hidden ${idx % 2 !== 0 ? 'md:ml-12' : 'md:mr-12'}`}
+              >
+                <img 
+                  src={img} 
+                  alt="Service Detail" 
+                  className="w-full h-full object-cover grayscale-[0.3] hover:grayscale-0 transition-all duration-700" 
+                />
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      <Footer />
+    </main>
+  );
+}\n--- ./app/services/page.tsx ---\n
+"use client";
+import Navbar from "@/components/ui/Navbar";
+import ServicesGrid from "@/components/sections/ServicesGrid";
+import Footer from "@/components/sections/Footer";
+
+export default function ServicesPage() {
+  return (
+    <main className="bg-[#050505] min-h-screen pt-20">
+      <Navbar />
+      <ServicesGrid />
+      <Footer />
+    </main>
+  );
 }\n--- ./postcss.config.mjs ---\n
 const config = {
   plugins: {
@@ -119,38 +646,146 @@ import "./.next/dev/types/routes.d.ts";
 \n--- ./components/ui/Navbar.tsx ---\n
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation"; // <-- 1. Import usePathname
 import { motion } from "framer-motion";
+import BookModal from "@/components/ui/BookModal";
 
-export default function Navbar({ onBookClick }: { onBookClick: () => void }) {
+export default function Navbar() {
+  const [isBookModalOpen, setIsBookModalOpen] = useState(false);
+  const pathname = usePathname(); // <-- 2. Get the current route
+
+  // 3. Helper function to check if the link is active
+  const isActive = (path: string) => pathname.startsWith(path);
+
   return (
-    <motion.header 
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1, delay: 0.2, ease: [0.33, 1, 0.68, 1] }}
-      // Removed mix-blend-difference and added a top gradient to protect text readability
-      className="absolute top-0 left-0 w-full z-50 flex items-center justify-between px-6 md:px-12 py-8 text-white bg-gradient-to-b from-black/60 to-transparent"
-    >
-      <div className="font-black text-2xl tracking-tighter uppercase text-white drop-shadow-md">
-        <Link href="/">Sekate.</Link>
-      </div>
+    <>
+      <motion.header 
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1, delay: 0.2, ease: [0.33, 1, 0.68, 1] }}
+        className="absolute top-0 left-0 w-full z-50 flex items-center justify-between px-6 md:px-12 py-8 text-white bg-gradient-to-b from-black/60 to-transparent"
+      >
+        <div className="font-black text-2xl tracking-tighter uppercase text-white drop-shadow-md">
+          <Link href="/">Sekate.</Link>
+        </div>
 
-      <nav className="hidden md:flex gap-12 text-xs font-bold uppercase tracking-[0.2em] drop-shadow-md">
-        <Link href="/about" className="hover:text-[#FF4D00] transition-colors duration-300">About</Link>
-        <Link href="/services" className="hover:text-[#FF4D00] transition-colors duration-300">Services</Link>
-        <Link href="/projects" className="hover:text-[#FF4D00] transition-colors duration-300">Projects</Link>
-        <Link href="/contact" className="hover:text-[#FF4D00] transition-colors duration-300">Contact</Link>
-      </nav>
+        <nav className="hidden md:flex gap-12 text-xs font-bold uppercase tracking-[0.2em] drop-shadow-md">
+          {/* 4. Conditionally apply the accent color if active */}
+          <Link href="/about" className={`transition-colors duration-300 hover:text-[var(--accent)] ${isActive('/about') ? 'text-[var(--accent)]' : 'text-white'}`}>
+            About
+          </Link>
+          <Link href="/services" className={`transition-colors duration-300 hover:text-[var(--accent)] ${isActive('/services') ? 'text-[var(--accent)]' : 'text-white'}`}>
+            Services
+          </Link>
+          <Link href="/projects" className={`transition-colors duration-300 hover:text-[var(--accent)] ${isActive('/projects') ? 'text-[var(--accent)]' : 'text-white'}`}>
+            Projects
+          </Link>
+          <Link href="/experience" className={`transition-colors duration-300 hover:text-[var(--accent)] ${isActive('/experience') ? 'text-[var(--accent)]' : 'text-white'} flex items-center gap-2`}>
+            <span>Experience</span>
+            <span className="bg-[var(--accent)] text-black text-[9px] px-1.5 py-0.5 rounded-sm">3D</span>
+          </Link>
+          <Link href="/contact" className={`transition-colors duration-300 hover:text-[var(--accent)] ${isActive('/contact') ? 'text-[var(--accent)]' : 'text-white'}`}>
+            Contact
+          </Link>
+        </nav>
 
-      <div className="hidden md:block">
-        <button 
-          onClick={onBookClick} 
-          className="text-xs font-black uppercase tracking-[0.2em] text-black bg-white px-6 py-4 hover:bg-[#FF4D00] hover:text-white transition-all duration-300"
+        <div className="hidden md:block">
+          <button 
+            onClick={() => setIsBookModalOpen(true)} 
+            className="text-xs font-black uppercase tracking-[0.2em] text-black bg-white px-6 py-4 hover:bg-[var(--accent)] hover:text-white transition-all duration-300"
+          >
+            Book a Call
+          </button>
+        </div>
+      </motion.header>
+
+      {/* The modal is now globally attached to the Navbar! */}
+      <BookModal isOpen={isBookModalOpen} onClose={() => setIsBookModalOpen(false)} />
+    </>
+  );
+}\n--- ./components/ui/Preloader.tsx ---\n
+"use client";
+
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+export default function Preloader() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [counter, setCounter] = useState(0);
+
+  useEffect(() => {
+    // Lock scrolling while loading
+    document.body.style.overflow = "hidden";
+
+    // Artificial counter for that Awwwards feel
+    const countInterval = setInterval(() => {
+      setCounter((prev) => {
+        if (prev < 100) {
+          return prev + Math.floor(Math.random() * 10) + 1;
+        }
+        clearInterval(countInterval);
+        return 100;
+      });
+    }, 50);
+
+    // Wait for the window to actually load its heavy assets, plus a small buffer
+    const handleLoad = () => {
+      setTimeout(() => {
+        setIsLoading(false);
+        document.body.style.overflow = "auto";
+      }, 800);
+    };
+
+    if (document.readyState === "complete") {
+      handleLoad();
+    } else {
+      window.addEventListener("load", handleLoad);
+    }
+
+    return () => {
+      clearInterval(countInterval);
+      window.removeEventListener("load", handleLoad);
+    };
+  }, []);
+
+  return (
+    <AnimatePresence>
+      {isLoading && (
+        <motion.div
+          key="preloader"
+          initial={{ y: 0 }}
+          exit={{ y: "-100%" }}
+          transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+          className="fixed inset-0 z-[999] bg-[#050505] flex flex-col items-center justify-center pointer-events-none"
         >
-          Book a Call
-        </button>
-      </div>
-    </motion.header>
+          <div className="flex flex-col items-center overflow-hidden">
+            <span className="text-[var(--accent)] font-bold uppercase tracking-[0.3em] text-xs mb-4">
+              Loading Assets
+            </span>
+            <div className="flex items-end gap-2">
+              <span className="text-7xl md:text-9xl font-black text-white leading-none">
+                {counter > 100 ? 100 : counter}
+              </span>
+              <span className="text-3xl md:text-5xl font-black text-[var(--accent)] leading-none pb-2">
+                %
+              </span>
+            </div>
+            
+            {/* Loading Bar */}
+            <div className="w-64 h-[2px] bg-white/10 mt-8 overflow-hidden">
+              <motion.div 
+                className="h-full bg-[var(--accent)]"
+                initial={{ width: "0%" }}
+                animate={{ width: `${counter > 100 ? 100 : counter}%` }}
+                transition={{ ease: "linear" }}
+              />
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }\n--- ./components/ui/SmoothScroll.tsx ---\n
 "use client";
@@ -768,6 +1403,334 @@ export default function HeroSlider() {
       </div>
     </section>
   );
+}\n--- ./components/canvas/BentoPortals.tsx ---\n
+"use client";
+
+import { useRef } from "react";
+import * as THREE from "three";
+
+export default function BentoPortals() {
+  const portalRef = useRef<THREE.Group>(null);
+
+  return (
+    <group ref={portalRef}>
+      {/* We will add the hover logic and cloned models here in the next step */}
+    </group>
+  );
+}\n--- ./components/canvas/SandboxScene.tsx ---\n
+"use client";
+
+import { useRef, Suspense } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Environment, useGLTF, PresentationControls, Html, Float, MeshDistortMaterial, ContactShadows } from "@react-three/drei";
+import * as THREE from "three";
+
+// --- LEVEL 1: AERIAL ---
+function AerialLevel() {
+  const { scene } = useGLTF("/models/drone.glb");
+  return (
+    <Float speed={3} rotationIntensity={1} floatIntensity={2}>
+      <primitive object={scene} scale={1.8} />
+      {/* Abstract Scanning Plane */}
+      <mesh position={[0, -2, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[10, 10]} />
+        <MeshDistortMaterial color="#FF4D00" opacity={0.1} transparent speed={2} factor={0.4} wireframe />
+      </mesh>
+    </Float>
+  );
+}
+
+// --- LEVEL 2: LAND SURVEY ---
+function SurveyLevel() {
+  const { scene: camera } = useGLTF("/models/camera.glb");
+  const { scene: block } = useGLTF("/models/block.glb");
+  return (
+    <group>
+      {/* Foundation shifted deeper down */}
+      <primitive object={block} position={[0, -0.6, 0]} scale={[8, 0.4, 8]} />
+      {/* Camera lifted significantly to Y=0.4 to ensure full visibility */}
+      <primitive object={camera} position={[-2.5, 0.4, 2.5]} scale={1.5} />
+    </group>
+  );
+}
+
+// --- LEVEL 3: CIVIL ---
+function CivilLevel() {
+  const { scene: pipes } = useGLTF("/models/pipes.glb");
+  const { scene: block } = useGLTF("/models/block.glb");
+  return (
+    <group>
+      <primitive object={block} position={[0, -0.6, 0]} scale={[8, 0.4, 8]} />
+      {/* Pipes elevated to sit clear of the slab */}
+      <primitive object={pipes} position={[0, 0.6, 0]} scale={3} />
+    </group>
+  );
+}
+
+// --- LEVEL 4: ENVIRONMENTAL ---
+function EnvLevel() {
+  const { scene: trees } = useGLTF("/models/trees.glb");
+  const { scene: block } = useGLTF("/models/block.glb");
+  return (
+    <group>
+      <primitive object={block} position={[0, -0.6, 0]} scale={[8, 0.4, 8]} />
+      <primitive object={trees} position={[0, 0.6, 0]} scale={3.5} />
+    </group>
+  );
+}
+
+// --- LEVEL 5: PLANNING ---
+function PlanningLevel() {
+  const { scene: city } = useGLTF("/models/city.glb");
+  const { scene: block } = useGLTF("/models/block.glb");
+  return (
+    <group>
+      <primitive object={block} position={[0, -0.6, 0]} scale={[8, 0.4, 8]} />
+      {/* City lifted to ensure the base doesn't clip the texture */}
+      <primitive object={city} position={[0, 0.8, 0]} scale={3.5} />
+    </group>
+  );
+}
+
+export default function SandboxScene({ phase }: { phase: number }) {
+  return (
+    <Canvas 
+      camera={{ position: [15, 12, 15], fov: 28 }} 
+      dpr={[1, 2]}
+    >
+      <color attach="background" args={["#050505"]} />
+      
+      <Suspense fallback={
+        <Html center>
+          <div className="flex flex-col items-center gap-2">
+            <div className="w-8 h-8 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+            <span className="text-[var(--accent)] font-black text-[10px] tracking-[0.3em] uppercase whitespace-nowrap">
+              Initializing...
+            </span>
+          </div>
+        </Html>
+      }>
+        <Environment preset="city" />
+        <ambientLight intensity={0.9} />
+        <spotLight position={[20, 30, 20]} angle={0.2} penumbra={1} intensity={3.5} castShadow />
+
+        <PresentationControls 
+          global 
+          snap={true} 
+          speed={1.5} 
+          rotation={[0, -Math.PI / 4, 0]} 
+          polar={[-0.1, 0.3]} 
+          azimuth={[-0.6, 0.6]}
+        >
+          <group>
+            {phase === 1 && <AerialLevel />}
+            {phase === 2 && <SurveyLevel />}
+            {phase === 3 && <CivilLevel />}
+            {phase === 4 && <EnvLevel />}
+            {phase === 5 && <PlanningLevel />}
+            
+            {phase === 0 && (
+              <mesh>
+                <boxGeometry args={[2, 2, 2]} />
+                <meshStandardMaterial color="#FF4D00" wireframe />
+              </mesh>
+            )}
+          </group>
+        </PresentationControls>
+
+        {/* Removed Grid component for a clean, minimal look */}
+
+        {/* ContactShadows grounds the model in the void */}
+        <ContactShadows position={[0, -0.61, 0]} opacity={0.6} scale={25} blur={3} far={10} />
+      </Suspense>
+    </Canvas>
+  );
+}
+
+useGLTF.preload("/models/drone.glb");
+useGLTF.preload("/models/camera.glb");
+useGLTF.preload("/models/block.glb");
+useGLTF.preload("/models/pipes.glb");
+useGLTF.preload("/models/trees.glb");
+useGLTF.preload("/models/city.glb");\n--- ./components/canvas/DroneModel.tsx ---\n
+"use client";
+
+import { useRef, useEffect } from "react";
+import { useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+export default function DroneModel() {
+  const { scene } = useGLTF("/models/drone.glb");
+  const droneRef = useRef<THREE.Group>(null);
+
+  useEffect(() => {
+    const drone = droneRef.current;
+    if (!drone) return;
+
+    gsap.set(drone.position, { x: 3, y: 2, z: 0 });
+    gsap.set(drone.scale, { x: 0.6, y: 0.6, z: 0.6 });
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: "body",
+          start: "top top",
+          end: "bottom bottom",
+          scrub: 1, // Smooth scrolling
+        },
+      });
+
+      // Journey down the page
+      tl.to(drone.position, { y: -4, x: -2.5, ease: "power1.inOut" }, 0)
+        .to(drone.position, { y: -12, x: 2.5, ease: "power1.inOut" }, 0.5)
+        .to(drone.position, { y: -20, x: 0, z: 2, ease: "power1.inOut" }, 1); // Flies closer to camera at the end
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  // MAKE IT USEFUL: Make the drone "look" at the user's mouse
+  useFrame((state) => {
+    if (droneRef.current) {
+      // 1. Natural hover bobbing
+      droneRef.current.position.y += Math.sin(state.clock.elapsedTime * 3) * 0.003;
+      
+      // 2. Mouse tracking (drone tilts towards cursor)
+      const targetRotationX = (state.pointer.y * Math.PI) / 4;
+      const targetRotationY = (state.pointer.x * Math.PI) / 4;
+      
+      droneRef.current.rotation.x = THREE.MathUtils.lerp(droneRef.current.rotation.x, targetRotationX, 0.05);
+      droneRef.current.rotation.y = THREE.MathUtils.lerp(droneRef.current.rotation.y, targetRotationY, 0.05);
+      
+      // Add a slight banking tilt on the Z axis based on X movement
+      droneRef.current.rotation.z = THREE.MathUtils.lerp(droneRef.current.rotation.z, -state.pointer.x * 0.5, 0.05);
+    }
+  });
+
+  return (
+    <group ref={droneRef} dispose={null}>
+      <primitive object={scene} />
+    </group>
+  );
+}\n--- ./components/canvas/FooterDiorama.tsx ---\n
+"use client";
+
+import { useRef, useEffect, useMemo } from "react";
+import { useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
+import gsap from "gsap";
+import ScrollTrigger from "gsap/ScrollTrigger";
+
+export default function FooterDiorama() {
+  const { scene: blockScene } = useGLTF("/models/block.glb");
+  const { scene: pipesScene } = useGLTF("/models/pipes.glb");
+  const { scene: treesScene } = useGLTF("/models/trees.glb");
+  const { scene: cityScene } = useGLTF("/models/city.glb");
+
+  const block = useMemo(() => blockScene.clone(), [blockScene]);
+  const pipes = useMemo(() => pipesScene.clone(), [pipesScene]);
+  const trees = useMemo(() => treesScene.clone(), [treesScene]);
+  const city = useMemo(() => cityScene.clone(), [cityScene]);
+
+  const groupRef = useRef<THREE.Group>(null);
+  const pipesRef = useRef<THREE.Group>(null);
+  const treesRef = useRef<THREE.Group>(null);
+  const cityRef = useRef<THREE.Group>(null);
+
+  useEffect(() => {
+    const group = groupRef.current;
+    const p = pipesRef.current;
+    const t = treesRef.current;
+    const c = cityRef.current;
+
+    if (!group || !p || !t || !c) return;
+
+    // Start everything tiny
+    gsap.set([group.scale, p.scale, t.scale, c.scale], { x: 0, y: 0, z: 0 });
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: "#contact",
+          start: "top center",
+          end: "bottom bottom",
+          scrub: 1, // Ties the assembly directly to how fast they scroll
+        },
+      });
+
+      // Assemble Sequence
+      tl.to(group.scale, { x: 1.5, y: 1.5, z: 1.5, ease: "back.out(1.2)" })
+        .to(group.rotation, { y: Math.PI * 2, ease: "power1.inOut" }, "<")
+        .to(p.scale, { x: 1, y: 1, z: 1, ease: "bounce.out" }, "-=0.2")
+        .to(t.scale, { x: 1, y: 1, z: 1, ease: "elastic.out(1, 0.5)" }, "-=0.2")
+        .to(c.scale, { x: 1, y: 1, z: 1, ease: "back.out(2)" }, "-=0.2");
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  // MAKE IT USEFUL: Parallax Mouse Tracking
+  useFrame((state) => {
+    if (groupRef.current) {
+      // Smoothly rotate the entire block towards the user's mouse
+      const targetX = (state.pointer.x * Math.PI) / 6;
+      const targetY = (state.pointer.y * Math.PI) / 8;
+      
+      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetX, 0.05);
+      groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, -targetY, 0.05);
+    }
+  });
+
+  return (
+    // Centered in the footer space
+    <group ref={groupRef} position={[0, -1, 0]} dispose={null}>
+      <primitive object={block} />
+      {/* Set positions to 0 so they lock together naturally like puzzle pieces */}
+      <group ref={pipesRef} position={[0, 0, 0]}><primitive object={pipes} /></group>
+      <group ref={treesRef} position={[0, 0, 0]}><primitive object={trees} /></group>
+      <group ref={cityRef} position={[0, 0, 0]}><primitive object={city} /></group>
+    </group>
+  );
+}\n--- ./components/canvas/Scene.tsx ---\n
+"use client";
+
+import { Canvas } from "@react-three/fiber";
+import { Environment, Preload } from "@react-three/drei";
+import DroneModel from "./DroneModel";
+import FooterDiorama from "./FooterDiorama";
+import BentoPortals from "./BentoPortals";
+
+export default function Scene() {
+  return (
+    // The canvas is fixed, covers the whole screen, and ignores pointer events 
+    // so you can still click the HTML buttons underneath.
+    <div className="fixed inset-0 z-40 pointer-events-none">
+      <Canvas
+        camera={{ position: [0, 0, 10], fov: 35 }}
+        gl={{ antialias: true, alpha: true }} // alpha: true makes the background transparent
+      >
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 5]} intensity={1} castShadow />
+        <Environment preset="city" />
+
+        {/* We will build these three components next */}
+        <DroneModel />
+        <FooterDiorama />
+        <BentoPortals />
+
+        {/* Preload ensures models are ready before they are needed */}
+        <Preload all />
+      </Canvas>
+    </div>
+  );
 }\n--- ./package.json ---\n
 {
   "name": "sekate",
@@ -780,14 +1743,18 @@ export default function HeroSlider() {
     "lint": "eslint"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
     "clsx": "^2.1.1",
     "framer-motion": "^12.35.2",
+    "gsap": "^3.14.2",
     "lenis": "^1.3.18",
     "lucide-react": "^0.577.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "tailwind-merge": "^3.5.0"
+    "tailwind-merge": "^3.5.0",
+    "three": "^0.183.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -817,6 +1784,7 @@ export const servicesData = [
       "Building Structures & Bridge Design"
     ],
     media: "/images/bridge.jpg", 
+    gallery: ["/images/drawing.jpg", "/images/pexels-vividcafe-681347.jpg"],
     type: "image"
   },
   {
@@ -834,6 +1802,7 @@ export const servicesData = [
       "Environmental Auditing & Compliance Monitoring (ECO)"
     ],
     media: "/images/water.jpg",
+    gallery: ["/images/water2.jpg", "/images/environmental2.jpg"],
     type: "image"
   },
   {
@@ -849,7 +1818,8 @@ export const servicesData = [
       "Setting Out Surveys (Accurate infrastructure placement)",
       "As-Built Surveys (Post-construction verification)"
     ],
-    media: "/images/surverying2.jpg", // Kept your exact filename spelling
+    media: "/images/surverying2.jpg", 
+    gallery: ["/images/surveying.jpg", "/images/pexels-themightynelson-5802827.jpg"],
     type: "image"
   },
   {
@@ -866,15 +1836,44 @@ export const servicesData = [
       "Pre-consultation and Public Participation"
     ],
     media: "/images/arial.jpg",
+    gallery: ["/images/planning2.jpg", "/images/town.jpg"],
     type: "image"
   }
 ];
 
 export const projectsData = [
-  { id: 1, title: "N3 Highway Expansion", category: "Civil Engineering", img: "/images/bridge.jpg", span: "md:col-span-2" },
-  { id: 2, title: "Gauteng Water Facility", category: "Environmental", img: "/images/water2.jpg", span: "md:col-span-1" },
-  { id: 3, title: "Midrand Urban Grid", category: "Town Planning", img: "/images/town.jpg", span: "md:col-span-1" },
-  { id: 4, title: "Durban Port Topography", category: "Land Surveying", img: "/images/surveying.jpg", span: "md:col-span-2" },
+  { 
+    id: 1, 
+    title: "N3 Highway Expansion", 
+    category: "Civil Engineering", 
+    img: "/images/bridge.jpg", 
+    gallery: ["/images/pexels-vividcafe-681347.jpg", "/images/drawing.jpg"],
+    span: "md:col-span-2" 
+  },
+  { 
+    id: 2, 
+    title: "Gauteng Water Facility", 
+    category: "Environmental", 
+    img: "/images/water2.jpg", 
+    gallery: ["/images/water.jpg", "/images/environmental.jpg"],
+    span: "md:col-span-1" 
+  },
+  { 
+    id: 3, 
+    title: "Midrand Urban Grid", 
+    category: "Town Planning", 
+    img: "/images/town.jpg", 
+    gallery: ["/images/arial.jpg", "/images/planning.jpg"],
+    span: "md:col-span-1" 
+  },
+  { 
+    id: 4, 
+    title: "Durban Port Topography", 
+    category: "Land Surveying", 
+    img: "/images/surveying.jpg", 
+    gallery: ["/images/surverying2.jpg", "/images/pexels-themightynelson-5802822.jpg"],
+    span: "md:col-span-2" 
+  },
 ];\n--- ./tsconfig.json ---\n
 {
   "compilerOptions": {
